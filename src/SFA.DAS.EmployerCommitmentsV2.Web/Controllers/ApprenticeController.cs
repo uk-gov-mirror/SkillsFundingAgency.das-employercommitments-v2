@@ -1263,11 +1263,22 @@ public class ApprenticeController(
         return View(viewModel);
     }
 
+
     [Route("change-history")]
     [HttpGet]
     public async Task<IActionResult> GetAllChangeHistory(GetAllChangeHistoryRequest request)
     {
         var viewModel = await modelMapper.Map<GetAllChangeHistoryListViewModel>(request);
+        return View(viewModel);
+    }
+
+
+    [Route("{apprenticeshipHashedId}/approvals/{approvalRequestId}")]
+    [Authorize(Policy = nameof(PolicyNames.AccessApprenticeship))]
+    [HttpGet]
+    public async Task<IActionResult> GetApprenticeshipApprovalRequest(ApprenticeshipApprovalRequest request)
+    {
+        var viewModel = await modelMapper.Map<ApprenticeshipApprovalRequestViewModel>(request);
         return View(viewModel);
     }
 
