@@ -207,5 +207,4 @@ public class ApprovalsApiClientTests
 
         actual.Should().BeEquivalentTo(response);
     }
-
 }
