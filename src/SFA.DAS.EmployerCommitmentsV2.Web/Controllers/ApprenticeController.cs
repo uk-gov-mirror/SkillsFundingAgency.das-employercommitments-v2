@@ -1272,11 +1272,49 @@ public class ApprenticeController(
         return View(viewModel);
     }
 
-
     [Route("{apprenticeshipHashedId}/approvals/{approvalRequestId}")]
     [Authorize(Policy = nameof(PolicyNames.AccessApprenticeship))]
     [HttpGet]
     public async Task<IActionResult> GetApprenticeshipApprovalRequest(ApprenticeshipApprovalRequest request)
+    {
+        var viewModel = await modelMapper.Map<ApprenticeshipApprovalRequestViewModel>(request);
+        return View(viewModel);
+    }
+
+    [Route("{apprenticeshipHashedId}/approvals/{approvalRequestId}")]
+    [Authorize(Policy = nameof(PolicyNames.AccessApprenticeship))]
+    [HttpPost]
+    public async Task<IActionResult> PostApprenticeshipApprovalRequest(ApprenticeshipApprovalRequestViewModel viewModel)
+    {
+        if (viewModel.ApproveChanges == true)
+        {
+            return RedirectToAction(nameof(ApprenticeshipApprovalRequestConfirmed),
+                new ApprenticeshipApprovalRequest
+                {
+                    AccountHashedId = viewModel.AccountHashedId,
+                    ApprenticeshipHashedId = viewModel.ApprenticeshipHashedId,
+                    ApprovalRequestId = viewModel.ApprovalRequestId
+                });
+        }
+        else if (viewModel.ApproveChanges == false)
+        {
+            TempData.AddFlashMessage("Changes declined", TempDataDictionaryExtensions.FlashMessageLevel.Success);
+
+        }
+
+        return RedirectToAction(nameof(GetApprenticeshipApprovalRequest),
+            new ApprenticeshipApprovalRequest
+            {
+                AccountHashedId = viewModel.AccountHashedId,
+                ApprenticeshipHashedId = viewModel.ApprenticeshipHashedId,
+                ApprovalRequestId = viewModel.ApprovalRequestId 
+            });
+    }
+
+    [Route("{apprenticeshipHashedId}/approvals/{approvalRequestId}/confirmed")]
+    [Authorize(Policy = nameof(PolicyNames.AccessApprenticeship))]
+    [HttpGet]
+    public async Task<IActionResult> ApprenticeshipApprovalRequestConfirmed(ApprenticeshipApprovalRequest request)
     {
         var viewModel = await modelMapper.Map<ApprenticeshipApprovalRequestViewModel>(request);
         return View(viewModel);

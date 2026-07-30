@@ -14,7 +14,7 @@ public class ApprenticesipApprovalRequestToViewModelMapperTests
         ApprenticeshipApprovalRequest source,
         GetApprenticeshipApprovalResponse apiResponse,
         Mock<IApprovalsApiClient> mockApprovalsApiClient,
-        ApprenticesipApprovalRequestToViewModelMapper mapper)
+        ApprenticeshipApprovalRequestToViewModelMapper mapper)
     {
         mockApprovalsApiClient.Setup(s => s.GetApprenticeshipApprovalRequest(source.AccountId, source.ApprenticeshipId, source.ApprovalRequestId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -58,7 +58,7 @@ public class ApprenticesipApprovalRequestToViewModelMapperTests
         var mockApprovalsApiClient = new Mock<IApprovalsApiClient>();
         mockApprovalsApiClient.Setup(s => s.GetApprenticeshipApprovalRequest(source.AccountId, source.ApprenticeshipId, source.ApprovalRequestId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
-        var mapper = new ApprenticesipApprovalRequestToViewModelMapper(mockApprovalsApiClient.Object);
+        var mapper = new ApprenticeshipApprovalRequestToViewModelMapper(mockApprovalsApiClient.Object);
 
         var result = await mapper.Map(source);
 
