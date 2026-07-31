@@ -1,12 +1,15 @@
 ﻿
+using SFA.DAS.EmployerCommitmentsV2.Contracts;
 using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
 
 namespace SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice;
 
-public class ApprenticeshipApprovalRequestViewModel
+public class ApprenticeshipApprovalRequestViewModel : IAuthorizationContextModel
 {
     public string ApprenticeshipHashedId { get; set; }
+    public long ApprenticeshipId { get; set; }
     public string AccountHashedId { get; set; }
+    public long AccountId { get; set; }
     public Guid ApprovalRequestId { get; set; }
     public CocApprovalResultStatus? ApprovalRequestStatus { get; set; }
     public virtual ICollection<ChangeItem> Items { get; set; }

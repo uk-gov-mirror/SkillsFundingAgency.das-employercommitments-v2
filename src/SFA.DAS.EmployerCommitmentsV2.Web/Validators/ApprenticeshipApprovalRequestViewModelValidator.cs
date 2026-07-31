@@ -9,6 +9,5 @@ public class ApprenticeshipApprovalRequestViewModelValidator : AbstractValidator
         RuleFor(r => r.ApproveChanges)
             .NotNull()
             .WithMessage("Select if you want to approve these changes");
-
     }
 }

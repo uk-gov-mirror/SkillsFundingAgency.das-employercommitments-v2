@@ -21,11 +21,11 @@ public class ApprenticeshipApprovalRequestToViewModelMapper(IApprovalsApiClient 
             ExceedsFundingCap = approvalRequest.ExceedsFundingCap,
             DisplayFundingCapPrice = ToCurrency(approvalRequest.FundingCap),
             Items = ConvertToDisplayItems(approvalRequest.Items),
-
             Name = approvalRequest.Name,
             ULN = approvalRequest.ULN,
             CourseName = approvalRequest.CourseName,
             ProviderName = approvalRequest.ProviderName,
+            UKPRN = approvalRequest.UKPRN
         };
     }
 

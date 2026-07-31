@@ -13,8 +13,8 @@ public class ApprenticesipApprovalRequestToViewModelMapperTests
     public async Task Then_Maps_MainValues(
         ApprenticeshipApprovalRequest source,
         GetApprenticeshipApprovalResponse apiResponse,
-        Mock<IApprovalsApiClient> mockApprovalsApiClient,
-        ApprenticeshipApprovalRequestToViewModelMapper mapper)
+        [Frozen]Mock<IApprovalsApiClient> mockApprovalsApiClient,
+        [Greedy] ApprenticeshipApprovalRequestToViewModelMapper mapper)
     {
         mockApprovalsApiClient.Setup(s => s.GetApprenticeshipApprovalRequest(source.AccountId, source.ApprenticeshipId, source.ApprovalRequestId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);

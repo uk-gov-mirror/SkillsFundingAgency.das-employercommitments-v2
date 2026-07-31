@@ -1284,12 +1284,17 @@ public class ApprenticeController(
     [Route("{apprenticeshipHashedId}/approvals/{approvalRequestId}")]
     [Authorize(Policy = nameof(PolicyNames.AccessApprenticeship))]
     [HttpPost]
-    public async Task<IActionResult> PostApprenticeshipApprovalRequest(ApprenticeshipApprovalRequestViewModel viewModel)
+    public async Task<IActionResult> PostApprenticeshipApprovalRequest([FromServices] IAuthenticationService authenticationService, ApprenticeshipApprovalRequestViewModel viewModel)
     {
+
+        var request = new ProcessApprenticeshipApprovalRequest { ApplyChanges = viewModel.ApproveChanges.Value, AccountId = viewModel.AccountId, UserInfo = authenticationService.UserInfo };
+
         if (viewModel.ApproveChanges == true)
         {
+            await outerApi.ProcessCocApproval(viewModel.AccountId, viewModel.ApprenticeshipId, viewModel.ApprovalRequestId, request, CancellationToken.None);
+
             return RedirectToAction(nameof(ApprenticeshipApprovalRequestConfirmed),
-                new ApprenticeshipApprovalRequest
+                new BaseApprenticeshipApprovalRequest
                 {
                     AccountHashedId = viewModel.AccountHashedId,
                     ApprenticeshipHashedId = viewModel.ApprenticeshipHashedId,
@@ -1298,12 +1303,11 @@ public class ApprenticeController(
         }
         else if (viewModel.ApproveChanges == false)
         {
+            await outerApi.ProcessCocApproval(viewModel.AccountId, viewModel.ApprenticeshipId, viewModel.ApprovalRequestId, request, CancellationToken.None);
             TempData.AddFlashMessage("Changes declined", TempDataDictionaryExtensions.FlashMessageLevel.Success);
-
         }
-
         return RedirectToAction(nameof(GetApprenticeshipApprovalRequest),
-            new ApprenticeshipApprovalRequest
+            new BaseApprenticeshipApprovalRequest
             {
                 AccountHashedId = viewModel.AccountHashedId,
                 ApprenticeshipHashedId = viewModel.ApprenticeshipHashedId,
