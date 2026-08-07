@@ -87,9 +87,6 @@
                                     Do you want to approve these changes?
                                 </h1>
                             </legend>
-                            <p>
-                                These changes will take affect from the 31 August 2026
-                            </p>
                             <div class="govuk-radios">
                                 @Html.ValidationMessageFor(m => m.ApproveChanges, null, new { @class = "govuk-error-message", id = "error-message-" + Html.IdFor(m => m.ApproveChanges) })
                                 <div class="govuk-radios__item">
