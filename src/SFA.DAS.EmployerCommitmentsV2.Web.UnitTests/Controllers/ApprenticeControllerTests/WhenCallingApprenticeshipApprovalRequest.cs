@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
 using SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice;
 
 namespace SFA.DAS.EmployerCommitmentsV2.Web.UnitTests.Controllers.ApprenticeControllerTests;
@@ -22,6 +23,22 @@ public class WhenCallingApprenticeshipApprovalRequest
     public async Task ThenReturnsViewModel()
     {
         var result = await _fixture.GetAllChangeHistory();
+
+        _fixture.VerifyViewModel(result as ViewResult);
+    }
+
+    [Test]
+    public async Task ThenDisplaysMessageIfChangeHasBeenCompleted()
+    {
+        var result = await _fixture.SetApprovalRequestStatus(CocApprovalResultStatus.Complete).GetAllChangeHistory();
+
+        _fixture.VerifyModelStateError(result as ViewResult);
+    }
+
+    [Test]
+    public async Task ThenReturnsViewModelIfChangeIsPending()
+    {
+        var result = await _fixture.SetApprovalRequestStatus(CocApprovalResultStatus.Pending).GetAllChangeHistory();
 
         _fixture.VerifyViewModel(result as ViewResult);
     }
@@ -49,6 +66,12 @@ public class WhenCallingApprenticeshipApprovalRequestFixture : ApprenticeControl
         return result as ViewResult;
     }
 
+    public WhenCallingApprenticeshipApprovalRequestFixture SetApprovalRequestStatus(CocApprovalResultStatus status)
+    {
+        _viewModel.ApprovalRequestStatus = status;
+        return this;
+    }
+
     public void VerifyMapperWasCalled()
     {
         MockMapper.Verify(m => m.Map<ApprenticeshipApprovalRequestViewModel>(_request));
@@ -59,5 +82,11 @@ public class WhenCallingApprenticeshipApprovalRequestFixture : ApprenticeControl
         var viewModel = viewResult.Model as ApprenticeshipApprovalRequestViewModel;
 
         viewModel.Should().Be(_viewModel);
+    }
+
+    public void VerifyModelStateError(ViewResult viewResult)
+    {
+        viewResult.Should().NotBeNull();
+        viewResult.ViewData.ModelState.Should().ContainSingle(m => m.Key == "ApprovalRequestStatus" && m.Value.Errors.Any(e => e.ErrorMessage == "This change has already been approved."));
     }
 }
