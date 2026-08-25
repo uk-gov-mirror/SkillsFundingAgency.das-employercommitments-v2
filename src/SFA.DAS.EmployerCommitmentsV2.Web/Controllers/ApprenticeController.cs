@@ -1285,6 +1285,11 @@ public class ApprenticeController(
             ModelState.AddModelError("ApprovalRequestStatus", "This change has already been approved.");
         }
 
+        if (!viewModel.PriceChangeApprovalAllowed)
+        {
+            ModelState.AddModelError(nameof(ApprenticeshipApprovalRequestViewModel.PriceChangeApprovalAllowed), "This change no longer exist");
+        }
+
         return View(viewModel);
     }
 

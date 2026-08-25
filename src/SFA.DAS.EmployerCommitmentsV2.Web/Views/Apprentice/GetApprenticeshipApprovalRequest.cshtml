@@ -1,5 +1,6 @@
 ﻿@using SFA.DAS.CommitmentsV2.Shared.Extensions
 @using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
+@using SFA.DAS.EmployerCommitmentsV2.Web.Controllers
 @using SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice;
 @using SFA.DAS.EmployerCommitmentsV2.Web.RouteValues;
 @model SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice.ApprenticeshipApprovalRequestViewModel
@@ -81,48 +82,52 @@
                 </div>
             </div>
 
-            @if (Model.ApprovalRequestStatus.HasValue && Model.ApprovalRequestStatus != CocApprovalResultStatus.Complete)
-                {
-                    <div class="govuk-form-group @Html.AddClassIfPropertyInError(x => x.ApproveChanges, "govuk-form-group--error")">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                                <h1 class="govuk-fieldset__heading">
-                                    Do you want to approve these changes?
-                                </h1>
-                            </legend>
-                            <p>
-                                These changes will take affect from the 31 August 2026
-                            </p>
-                            <div class="govuk-radios">
-                                @Html.ValidationMessageFor(m => m.ApproveChanges, null, new { @class = "govuk-error-message", id = "error-message-" + Html.IdFor(m => m.ApproveChanges) })
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="ApproveChanges" name="ApproveChanges" type="radio" value="true">
-                                    <label class="govuk-label govuk-radios__label" for="ApproveChanges">
-                                        Yes, approve these changes
-                                    </label>
-                                </div>
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="ApproveChanges-no" name="ApproveChanges" type="radio" value="false">
-                                    <label class="govuk-label govuk-radios__label" for="ApproveChanges-no">
-                                        No, decline changes and send messages to training provider
-                                    </label>
-                                </div>
+            @if (!Model.PriceChangeApprovalAllowed)
+            {
+                <a class="govuk-link govuk-link--no-visited-state" href="@Url.Action(nameof(ApprenticeController.ChangeHistory), new ChangeHistoryRequest { ApprenticeshipHashedId = Model.ApprenticeshipHashedId, AccountHashedId = Model.AccountHashedId })" id="view-change-history-link">View change history for this learner</a>
+            }
+            else if (Model.ApprovalRequestStatus.HasValue && Model.ApprovalRequestStatus != CocApprovalResultStatus.Complete)
+            {
+                <div class="govuk-form-group @Html.AddClassIfPropertyInError(x => x.ApproveChanges, "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            <h1 class="govuk-fieldset__heading">
+                                Do you want to approve these changes?
+                            </h1>
+                        </legend>
+                        <p>
+                            These changes will take affect from the 31 August 2026
+                        </p>
+                        <div class="govuk-radios">
+                            @Html.ValidationMessageFor(m => m.ApproveChanges, null, new { @class = "govuk-error-message", id = "error-message-" + Html.IdFor(m => m.ApproveChanges) })
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="ApproveChanges" name="ApproveChanges" type="radio" value="true">
+                                <label class="govuk-label govuk-radios__label" for="ApproveChanges">
+                                    Yes, approve these changes
+                                </label>
                             </div>
-                        </fieldset>
-                    </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="ApproveChanges-no" name="ApproveChanges" type="radio" value="false">
+                                <label class="govuk-label govuk-radios__label" for="ApproveChanges-no">
+                                    No, decline changes and send messages to training provider
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
 
 
-                    <div class="govuk-button-group">
+                <div class="govuk-button-group">
 
-                        <button class="govuk-button" data-module="govuk-button" type="submit" id="continue-button">
-                            Continue
-                        </button>
+                    <button class="govuk-button" data-module="govuk-button" type="submit" id="continue-button">
+                        Continue
+                    </button>
 
-                        <a class="govuk-link govuk-link--no-visited-state" href="@Url.Action("ApprenticeshipDetails", new ApprenticeshipDetailsRequest { AccountHashedId = Model.AccountHashedId, ApprenticeshipHashedId = Model.ApprenticeshipHashedId })" id="cancel-button">Cancel and return</a>
-                    </div>
-                }
+                    <a class="govuk-link govuk-link--no-visited-state" href="@Url.Action("ApprenticeshipDetails", new ApprenticeshipDetailsRequest { AccountHashedId = Model.AccountHashedId, ApprenticeshipHashedId = Model.ApprenticeshipHashedId })" id="cancel-button">Cancel and return</a>
+                </div>
+            }
                 else { <a class="govuk-link govuk-link--no-visited-state" href="@Url.RouteUrl(RouteNames.ApprenticesIndex, new { @Model.AccountHashedId })" id="go-homepage-link">Go to homepage</a> }
-            </form>
+        </form>
     </div>
 </div>
 

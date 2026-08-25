@@ -1,5 +1,4 @@
-﻿
-using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
+﻿using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
 
 namespace SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice;
 
@@ -16,6 +15,8 @@ public class ApprenticeshipApprovalRequestViewModel
     public string ProviderName { get; set; }
     public long UKPRN { get; set; }
     public bool? ApproveChanges { get; set; }
+    public bool PriceChangeApprovalAllowed { get; set; }
+
 
     public class ChangeItem
     {

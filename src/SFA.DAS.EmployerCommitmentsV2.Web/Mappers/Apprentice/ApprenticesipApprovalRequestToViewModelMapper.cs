@@ -1,16 +1,20 @@
-﻿using System.Globalization;
-using SFA.DAS.CommitmentsV2.Shared.Interfaces;
+﻿using SFA.DAS.CommitmentsV2.Shared.Interfaces;
 using SFA.DAS.EmployerCommitmentsV2.Contracts;
 using SFA.DAS.EmployerCommitmentsV2.Services.Approvals.Responses;
 using SFA.DAS.EmployerCommitmentsV2.Web.Models.Apprentice;
+using System.Globalization;
+using SFA.DAS.CommitmentsV2.Types;
 
 namespace SFA.DAS.EmployerCommitmentsV2.Web.Mappers.Apprentice;
 
-public class ApprenticesipApprovalRequestToViewModelMapper(IApprovalsApiClient approvalsApiClient) : IMapper<ApprenticeshipApprovalRequest, ApprenticeshipApprovalRequestViewModel>
+public class ApprenticeshipApprovalRequestToViewModelMapper(IApprovalsApiClient approvalsApiClient) : IMapper<ApprenticeshipApprovalRequest, ApprenticeshipApprovalRequestViewModel>
 {
+    private const string TNP = "TNP";
+
     public async Task<ApprenticeshipApprovalRequestViewModel> Map(ApprenticeshipApprovalRequest source)
     {
         var approvalRequest = await approvalsApiClient.GetApprenticeshipApprovalRequest(source.AccountId, source.ApprenticeshipId, source.ApprovalRequestId);
+        var apprenticeship = await approvalsApiClient.GetEditApprenticeship(source.AccountId, source.ApprenticeshipId);
 
         return new ApprenticeshipApprovalRequestViewModel
         {
@@ -18,6 +22,7 @@ public class ApprenticesipApprovalRequestToViewModelMapper(IApprovalsApiClient a
             AccountHashedId = source.AccountHashedId,
             ApprovalRequestId = source.ApprovalRequestId,
             ApprovalRequestStatus = approvalRequest.ApprovalRequestStatus,
+            PriceChangeApprovalAllowed = IsPriceChangeApprovalAllowed(approvalRequest.Items, apprenticeship.Status),
 
             Items = ConvertToDisplayItems(approvalRequest.Items),
 
@@ -66,6 +71,22 @@ public class ApprenticesipApprovalRequestToViewModelMapper(IApprovalsApiClient a
         }
 
         return displayItems;
+    }
+
+    private bool IsPriceChangeApprovalAllowed(ICollection<GetApprenticeshipApprovalResponse.ChangeItem> items, ApprenticeshipStatus currentStatus)
+    {
+        var result = false;
+        var hasPriceChangeItem = items.Any(i => i.FieldName.Contains(TNP));
+        
+        if (hasPriceChangeItem 
+            && (currentStatus == ApprenticeshipStatus.Live 
+                || currentStatus == ApprenticeshipStatus.Paused 
+                || currentStatus == ApprenticeshipStatus.WaitingToStart))
+        {
+            result = true;
+        }
+
+        return result;
     }
 
     public static string ToCurrency(string input)
