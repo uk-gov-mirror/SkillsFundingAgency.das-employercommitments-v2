@@ -70,4 +70,8 @@ public interface IApprovalsApiClient
     Task<GetAllChangeHistoryResponse> GetChangeHistoryForEmployer(long accountId, CancellationToken cancellationToken = default);
 
     Task<GetApprenticeshipsResponse> GetApprenticeships(GetApprenticeshipsRequest request, CancellationToken cancellationToken = default);
+
+    Task<GetApprenticeshipApprovalRequestAlertsResponse> GetApprenticeshipApprovalRequestAlerts(GetApprovalRequestAlertRequest request, CancellationToken cancellationToken = default);
+
+    Task UpdateApprovalRequestAlertAcknowledge(long apprenticeshipId, UpdateApprovalRequestAlertAcknowledgeRequest request, CancellationToken cancellationToken = default);
 }

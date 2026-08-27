@@ -1271,6 +1271,34 @@ public class ApprenticeController(
         return View(viewModel);
     }
 
+    [Route("{apprenticeshipHashedId}/view-alerts")]
+    [HttpGet]
+    public async Task<IActionResult> ViewApprovalRequestAlerts(ApprenticeshipApprovalRequestAlertsRequest request)
+    {
+        var viewModel = await modelMapper.Map<ApprenticeshipApprovalRequestAlertsViewModel>(request);
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [Route("{apprenticeshipHashedId}/view-alerts")]
+    public async Task<IActionResult> ViewApprovalRequestAlerts(
+       ApprenticeshipApprovalRequestAlertsViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        var request = await modelMapper.Map<UpdateApprovalRequestAlertAcknowledgeRequest>(viewModel);
+
+        await outerApi.UpdateApprovalRequestAlertAcknowledge(viewModel.ApprenticeshipId, request);
+
+        return RedirectToAction(nameof(Index), new
+        {
+            viewModel.AccountHashedId
+        });
+    }
+
     private async Task<Guid> StoreEditApprenticeshipRequestViewModelInCache(EditApprenticeshipRequestViewModel model, Guid? key)
     {
         key ??= Guid.NewGuid();
