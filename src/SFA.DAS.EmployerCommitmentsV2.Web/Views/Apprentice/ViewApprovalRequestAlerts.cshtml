@@ -40,11 +40,10 @@
             </div>
         </details>
 
-        @for (int i = 0; i < Model.ApprovalRequests?.Count(); i++)
+        @foreach (var item in Model.ApprovalRequests.Select((request, index) => new { request, index }))
         {
+            var i = item.index;
             var approvalRequest = Model.ApprovalRequests[i];
-            @* <partial name="_ApprovalRequestChangeSetPartial" model="approvalRequest.ApprovalRequestFieldItems" /> *@
-
 
             <table class="govuk-table das-table--condensed das-table--responsive das-table--double-arrows">
                 <thead class="govuk-table__head">
@@ -94,11 +93,11 @@
                 </tbody>
             </table>
 
-            <input type="hidden" asp-for="@Model.ApprovalRequests[i].Id"  />
+            <input type="hidden" asp-for="@Model.ApprovalRequests[i].Id" />
 
             <div class="govuk-form-group @Html.AddClassIfPropertyInError(x => x.ApprovalRequests[@i].Seen, "govuk-form-group--error")">
                 <fieldset class="govuk-fieldset">
-                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[$"ApprovalRequests[{i}].Seen"]?.Errors.Count >0 )
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[$"ApprovalRequests[{i}].Seen"]?.Errors.Count > 0)
                     {
                         <span id="error-message-ApprovalRequests[@i].Seen" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span> @ViewData.ModelState[$"ApprovalRequests[{i}].Seen"].Errors.First().ErrorMessage
