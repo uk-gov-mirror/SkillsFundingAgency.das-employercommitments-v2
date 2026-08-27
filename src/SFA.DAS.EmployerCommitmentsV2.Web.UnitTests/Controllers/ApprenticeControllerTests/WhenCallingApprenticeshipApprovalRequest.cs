@@ -28,11 +28,27 @@ public class WhenCallingApprenticeshipApprovalRequest
     }
 
     [Test]
+    public async Task ThenDisplaysMessageIfStatusIsNotLivePauseOrWaitingToStart()
+    {
+        var result = await _fixture.SetChangeApprovalAllowed(false).GetAllChangeHistory();
+
+        _fixture.VerifyChangeApprovalAllowedModelStateError(result as ViewResult);
+    }
+
+    [Test]
+    public async Task ThenReturnsViewModelIfStatusIsLivePauseOrWaitingToStart()
+    {
+        var result = await _fixture.SetChangeApprovalAllowed(true).GetAllChangeHistory();
+
+        _fixture.VerifyViewModel(result as ViewResult);
+    }
+
+    [Test]
     public async Task ThenDisplaysMessageIfChangeHasBeenCompleted()
     {
         var result = await _fixture.SetApprovalRequestStatus(CocApprovalResultStatus.Complete).GetAllChangeHistory();
 
-        _fixture.VerifyModelStateError(result as ViewResult);
+        _fixture.VerifyApprovalRequestStatusModelStateError(result as ViewResult);
     }
 
     [Test]
@@ -72,6 +88,12 @@ public class WhenCallingApprenticeshipApprovalRequestFixture : ApprenticeControl
         return this;
     }
 
+    public WhenCallingApprenticeshipApprovalRequestFixture SetChangeApprovalAllowed(bool changeApprovalAllowed)
+    {
+        _viewModel.ChangeApprovalAllowed = changeApprovalAllowed;
+        return this;
+    }
+
     public void VerifyMapperWasCalled()
     {
         MockMapper.Verify(m => m.Map<ApprenticeshipApprovalRequestViewModel>(_request));
@@ -84,9 +106,15 @@ public class WhenCallingApprenticeshipApprovalRequestFixture : ApprenticeControl
         viewModel.Should().Be(_viewModel);
     }
 
-    public void VerifyModelStateError(ViewResult viewResult)
+    public void VerifyApprovalRequestStatusModelStateError(ViewResult viewResult)
     {
         viewResult.Should().NotBeNull();
         viewResult.ViewData.ModelState.Should().ContainSingle(m => m.Key == "ApprovalRequestStatus" && m.Value.Errors.Any(e => e.ErrorMessage == "This change has already been approved."));
+    }
+
+    public void VerifyChangeApprovalAllowedModelStateError(ViewResult viewResult)
+    {
+        viewResult.Should().NotBeNull();
+        viewResult.ViewData.ModelState.Should().ContainSingle(m => m.Key == "ChangeApprovalAllowed" && m.Value.Errors.Any(e => e.ErrorMessage == "This change no longer exists"));
     }
 }

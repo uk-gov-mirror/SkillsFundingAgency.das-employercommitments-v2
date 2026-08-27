@@ -15,7 +15,7 @@ public class ApprenticeshipApprovalRequestViewModel
     public string ProviderName { get; set; }
     public long UKPRN { get; set; }
     public bool? ApproveChanges { get; set; }
-    public bool PriceChangeApprovalAllowed { get; set; }
+    public bool ChangeApprovalAllowed { get; set; }
 
 
     public class ChangeItem

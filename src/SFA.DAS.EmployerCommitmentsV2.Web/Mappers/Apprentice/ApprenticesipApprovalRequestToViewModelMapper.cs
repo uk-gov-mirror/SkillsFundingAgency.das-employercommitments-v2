@@ -9,12 +9,9 @@ namespace SFA.DAS.EmployerCommitmentsV2.Web.Mappers.Apprentice;
 
 public class ApprenticeshipApprovalRequestToViewModelMapper(IApprovalsApiClient approvalsApiClient) : IMapper<ApprenticeshipApprovalRequest, ApprenticeshipApprovalRequestViewModel>
 {
-    private const string TNP = "TNP";
-
     public async Task<ApprenticeshipApprovalRequestViewModel> Map(ApprenticeshipApprovalRequest source)
     {
         var approvalRequest = await approvalsApiClient.GetApprenticeshipApprovalRequest(source.AccountId, source.ApprenticeshipId, source.ApprovalRequestId);
-        var apprenticeship = await approvalsApiClient.GetEditApprenticeship(source.AccountId, source.ApprenticeshipId);
 
         return new ApprenticeshipApprovalRequestViewModel
         {
@@ -22,7 +19,7 @@ public class ApprenticeshipApprovalRequestToViewModelMapper(IApprovalsApiClient 
             AccountHashedId = source.AccountHashedId,
             ApprovalRequestId = source.ApprovalRequestId,
             ApprovalRequestStatus = approvalRequest.ApprovalRequestStatus,
-            PriceChangeApprovalAllowed = IsPriceChangeApprovalAllowed(approvalRequest.Items, apprenticeship.Status),
+            ChangeApprovalAllowed = IsChangeApprovalAllowed(approvalRequest.ApprenticeshipStatus),
 
             Items = ConvertToDisplayItems(approvalRequest.Items),
 
@@ -73,21 +70,10 @@ public class ApprenticeshipApprovalRequestToViewModelMapper(IApprovalsApiClient 
         return displayItems;
     }
 
-    private bool IsPriceChangeApprovalAllowed(ICollection<GetApprenticeshipApprovalResponse.ChangeItem> items, ApprenticeshipStatus currentStatus)
-    {
-        var result = false;
-        var hasPriceChangeItem = items.Any(i => i.FieldName.Contains(TNP));
-        
-        if (hasPriceChangeItem 
-            && (currentStatus == ApprenticeshipStatus.Live 
-                || currentStatus == ApprenticeshipStatus.Paused 
-                || currentStatus == ApprenticeshipStatus.WaitingToStart))
-        {
-            result = true;
-        }
-
-        return result;
-    }
+    private bool IsChangeApprovalAllowed(ApprenticeshipStatus currentStatus) =>
+        currentStatus == ApprenticeshipStatus.Live
+        || currentStatus == ApprenticeshipStatus.Paused
+        || currentStatus == ApprenticeshipStatus.WaitingToStart;
 
     public static string ToCurrency(string input)
     {

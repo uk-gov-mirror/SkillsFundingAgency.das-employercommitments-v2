@@ -82,7 +82,7 @@
                 </div>
             </div>
 
-            @if (!Model.PriceChangeApprovalAllowed)
+            @if (!Model.ChangeApprovalAllowed)
             {
                 <a class="govuk-link govuk-link--no-visited-state" href="@Url.Action(nameof(ApprenticeController.ChangeHistory), new ChangeHistoryRequest { ApprenticeshipHashedId = Model.ApprenticeshipHashedId, AccountHashedId = Model.AccountHashedId })" id="view-change-history-link">View change history for this learner</a>
             }
